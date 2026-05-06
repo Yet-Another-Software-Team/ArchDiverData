@@ -1,0 +1,25 @@
+WITH unique_project_links AS (
+    -- Step 1: Get unique combinations of smell_type and project_link
+    SELECT DISTINCT 
+        smell_type, 
+        repository_link AS project_link
+    FROM public.linked_smells
+    WHERE repository_link IS NOT NULL AND repository_link <> ''
+),
+ranked_project_links AS (
+    -- Step 2: Assign a sequential row number to each unique link within its smell_type group
+    SELECT 
+        smell_type,
+        project_link,
+        ROW_NUMBER() OVER (
+            PARTITION BY smell_type 
+            ORDER BY project_link
+        ) AS row_num
+    FROM unique_project_links
+)
+-- Step 3: Filter for only the first 2000 rows of each group
+SELECT 
+    smell_type, 
+    project_link
+FROM ranked_project_links
+WHERE row_num <= 2000;

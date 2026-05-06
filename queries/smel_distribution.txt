@@ -1,0 +1,6 @@
+SELECT 
+    name, 
+    COUNT(DISTINCT "Project_id") as unique_project_count
+FROM public.upload_archsmell
+GROUP BY name
+ORDER BY unique_project_count DESC;

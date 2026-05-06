@@ -1,0 +1,16 @@
+CREATE TABLE public.linked_smells AS
+SELECT 
+    arch.id AS smell_id,
+    arch.name AS smell_type,
+	component,
+	responsible_classes,
+    dp.repository_link,
+    arch."Project_id" AS project_id,
+    p."Solution_id" AS solution_id
+FROM public.upload_archsmell arch
+JOIN public.upload_project p 
+    ON arch."Project_id" = p.id
+JOIN public.upload_solution s 
+    ON p."Solution_id" = s.id
+JOIN public.upload_designiteproject dp 
+    ON s."Designite_Project_id" = dp.id;
