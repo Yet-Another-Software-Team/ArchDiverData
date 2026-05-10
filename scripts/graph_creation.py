@@ -155,7 +155,11 @@ def build_hetero_code_graph(root_directory, output_file="code_graph.pt"):
     data['Class', 'imports', 'Class'].edge_index = build_edge_tensor(edge_class_imports_class)
 
     # --- Save Data ---
-    torch.save(data, output_file)
+    torch.save({
+        'graph_data': data,
+        'class_mapping': {v: k for k, v in class_name_to_id.items()},
+        'component_mapping': {v: k for k, v in component_path_to_id.items()}
+    }, output_file)
     print(f"\nSUCCESS: Heterogeneous graph saved to {output_file}")
     print(f"Summary: {num_components} Components, {num_classes} Classes mapped.")
 
