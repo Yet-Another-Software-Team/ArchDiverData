@@ -222,3 +222,6 @@ __marimo__/
 # virtual environments
 .venv/
 venv/
+
+# Output dir
+output/
