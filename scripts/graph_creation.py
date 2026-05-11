@@ -110,19 +110,26 @@ def build_hetero_code_graph(root_directory, output_file="code_graph.pt"):
     print(f"\n--- Starting Pass 2: Building Import Edges ---")
     
     # --- PASS 2: Build Class Imports Class Edges ---
+    # 1. Create a "Simple Name" mapping to handle fully qualified imports
+    # Example: Map "HomeController" -> id_0
+    simple_name_to_id = {name.split('.')[-1]: id for name, id in class_name_to_id.items()}
+
     for src_class, deps in class_dependencies.items():
         src_id = class_name_to_id.get(src_class)
-        if src_id is None:
-            continue
+        if src_id is None: continue
 
-        for dst_class in deps:
-            # This check acts as an automatic filter for external libraries.
-            # Things like "java.io" or "java.util" from your example will be ignored
-            # because they don't have a corresponding parsed TOML file in class_name_to_id.
-            if dst_class in class_name_to_id:
-                dst_id = class_name_to_id[dst_class]
-                edge_class_imports_class[0].append(src_id)
-                edge_class_imports_class[1].append(dst_id)
+        for dst_import_string in deps:
+            # 2. Extract the actual Class Name from the end of the import
+            # Example: "com.app.services.AuthService" -> "AuthService"
+            dst_simple_name = dst_import_string.split('.')[-1]
+            
+            if dst_simple_name in simple_name_to_id:
+                dst_id = simple_name_to_id[dst_simple_name]
+                
+                # Avoid self-loops
+                if src_id != dst_id:
+                    edge_class_imports_class[0].append(src_id)
+                    edge_class_imports_class[1].append(dst_id)
 
     print(f"Finished building edges. Constructing PyTorch Geometric Data Object...")
 
