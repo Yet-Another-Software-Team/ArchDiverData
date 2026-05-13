@@ -54,6 +54,7 @@ def build_hetero_code_graph(root_directory, output_file="code_graph.pt"):
     
     edge_comp_contains_comp = ([], [])
     edge_comp_contains_class = ([], [])
+    edge_class_contained_by_comp = ([], [])
     edge_class_imports_class = ([], [])
 
     print(f"--- Starting Pass 1: Parsing Directories and TOML files ---")
@@ -99,9 +100,11 @@ def build_hetero_code_graph(root_directory, output_file="code_graph.pt"):
             # Extract features specific to the new TOML schema
             class_features_dict[curr_class_id] = extract_class_features(data)
 
-            # Record Containment Edge
+            # Record Containment Edges (bi-directional)
             edge_comp_contains_class[0].append(curr_comp_id)
             edge_comp_contains_class[1].append(curr_class_id)
+            edge_class_contained_by_comp[0].append(curr_class_id)
+            edge_class_contained_by_comp[1].append(curr_comp_id)
 
             # Gather Imports directly from the 'imports' list
             # We convert to a set to remove duplicates
@@ -159,6 +162,7 @@ def build_hetero_code_graph(root_directory, output_file="code_graph.pt"):
 
     data['Component', 'contains', 'Component'].edge_index = build_edge_tensor(edge_comp_contains_comp)
     data['Component', 'contains', 'Class'].edge_index = build_edge_tensor(edge_comp_contains_class)
+    data['Class', 'contained_by', 'Component'].edge_index = build_edge_tensor(edge_class_contained_by_comp)
     data['Class', 'imports', 'Class'].edge_index = build_edge_tensor(edge_class_imports_class)
 
     # --- Save Data ---
