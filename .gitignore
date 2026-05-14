@@ -225,3 +225,7 @@ venv/
 
 # Output dir
 output/
+
+# MLFlow artifacts
+mlruns/
+mlflow.db
