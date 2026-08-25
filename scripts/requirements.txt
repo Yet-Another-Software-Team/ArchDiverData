@@ -2,5 +2,11 @@ requests
 tqdm
 torch
 torch-geometric
-torch-scatter
-torch-sparse
+onnx
+onnxruntime
+onnxscript
+scikit-learn
+matplotlib
+networkx
+pandas
+pytest
